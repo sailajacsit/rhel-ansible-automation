@@ -1,0 +1,16 @@
+---
+# Variables shared by all RHEL hosts in the inventory.
+
+# Admin users created by the users role.
+# Replace the placeholder keys with real SSH public keys.
+admin_users:
+  - name: sailaja
+    ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyReplaceMe user@laptop"
+  # - name: second.admin
+  #   ssh_key: "ssh-ed25519 AAAA... second-admin@example"
+
+# Packages patched by patch.yml (override with -e "patch_packages=[...]")
+patch_packages:
+  - kernel
+  - httpd
+  - openssl

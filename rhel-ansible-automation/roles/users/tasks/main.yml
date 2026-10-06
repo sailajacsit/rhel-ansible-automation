@@ -1,0 +1,20 @@
+# roles/users/tasks/main.yml
+---
+- name: Create admin group
+  ansible.builtin.group:
+    name: sysadmins
+    state: present
+
+- name: Create admin users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: sysadmins,wheel
+    shell: /bin/bash
+    state: present
+  loop: "{{ admin_users }}"
+
+- name: Deploy authorized SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+  loop: "{{ admin_users }}"

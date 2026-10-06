@@ -1,0 +1,21 @@
+# roles/common/tasks/main.yml
+---
+- name: Install baseline packages
+  ansible.builtin.dnf:
+    name:
+      - vim-enhanced
+      - tmux
+      - firewalld
+      - policycoreutils-python-utils
+    state: present
+
+- name: Set timezone
+  ansible.builtin.timezone:
+    name: Europe/Berlin
+
+- name: Enforce root-owned config permissions
+  ansible.builtin.file:
+    path: /etc/sysconfig
+    owner: root
+    group: root
+    mode: "0755"

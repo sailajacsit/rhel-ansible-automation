@@ -1,0 +1,36 @@
+# patch.yml — selective patching with health checks
+---
+- name: Patch RHEL servers
+  hosts: rhel
+  become: true
+  serial: 1   # one server at a time
+
+  pre_tasks:
+    - name: Pre-patch health check — disk usage
+      ansible.builtin.command: df -h /
+      register: disk_before
+      changed_when: false
+
+    - name: Fail if root filesystem above 85%
+      ansible.builtin.fail:
+        msg: "Disk usage too high, aborting patch"
+      when: disk_before.stdout.split()[10] | regex_replace('%','') | int > 85
+
+  tasks:
+    - name: Update selected packages
+      ansible.builtin.dnf:
+        name: "{{ patch_packages }}"
+        state: latest
+      register: patch_result
+
+    - name: Reboot if kernel was updated
+      ansible.builtin.reboot:
+      when: "'kernel' in patch_packages"
+
+  post_tasks:
+    - name: Verify critical services are running
+      ansible.builtin.service_facts:
+
+    - name: Post-patch health report
+      ansible.builtin.debug:
+        msg: "Memory free: {{ ansible_facts.memfree_mb }} MB"

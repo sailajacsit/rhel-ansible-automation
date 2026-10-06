@@ -1,0 +1,22 @@
+# roles/httpd/tasks/main.yml
+---
+- name: Install Apache httpd
+  ansible.builtin.dnf:
+    name: httpd
+    state: present
+
+- name: Deploy index page
+  ansible.builtin.copy:
+    dest: /var/www/html/index.html
+    content: |
+      <h1>Deployed by Ansible</h1>
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart httpd
+
+- name: Ensure httpd is enabled and running
+  ansible.builtin.systemd:
+    name: httpd
+    enabled: true
+    state: started

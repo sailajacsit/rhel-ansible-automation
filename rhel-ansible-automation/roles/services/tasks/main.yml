@@ -1,0 +1,16 @@
+# roles/services/tasks/main.yml
+---
+- name: Ensure firewalld is enabled and running
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: Validate service state after deployment
+  ansible.builtin.service_facts:
+
+- name: Fail if firewalld is not running
+  ansible.builtin.fail:
+    msg: "firewalld is not running after deployment"
+  when: >-
+    ansible_facts.services['firewalld.service'].state != 'running'

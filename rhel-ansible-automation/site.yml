@@ -1,0 +1,17 @@
+# site.yml — baseline configuration for all RHEL hosts
+---
+- name: Baseline RHEL configuration
+  hosts: rhel
+  become: true
+  roles:
+    - common
+    - users
+    - sshd
+    - services
+
+- name: Web tier configuration
+  hosts: webservers
+  become: true
+  roles:
+    - httpd
+    - firewall
